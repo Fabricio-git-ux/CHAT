@@ -67,11 +67,12 @@ const getRandomColor = () => {
 }
 
 const scrollScreen = () => {
-    window.scrollTo({
-        top: document.body.scrollHeight,
+    chatMessages.scrollTo({
+        top: chatMessages.scrollHeight,
         behavior: 'smooth'
     });
-}
+};
+
 
 const processMessage = ({ data }) => {
     const { userId, userName, userColor, content } = JSON.parse(data);
@@ -110,9 +111,14 @@ const sendMessage = (event => {
         timestamp: new Date().toISOString()
     }
 
-    websocket.send(JSON.stringify(message));
+    if (websocket.readyState === WebSocket.OPEN) {
+        websocket.send(JSON.stringify(message));
+    } else {
+        console.warn("WebSocket ainda não está conectado. Mensagem não enviada.");
+    }
 
     chatInput.value = "";
+
 });
 
 loginForm.addEventListener('submit', handleLogin);
